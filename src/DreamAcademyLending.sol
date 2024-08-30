@@ -156,9 +156,6 @@ contract DreamAcademyLending {
         users[user].borrowed_usdc += accrued_interest;
 
         uint256 supply_interest = (users[user].total_supply * interest_rate_per_block * blocks_passed) / 1e18;
-        console.log("im interest_updating func");
-        console.log("supplyInterest:", supply_interest);
-
         users[user].total_supply += supply_interest;
         users[user].last_interest_block = block.number; 
     }
@@ -166,7 +163,6 @@ contract DreamAcademyLending {
     function getAccruedSupplyAmount(address token) external returns (uint256) {
         require(token == address(usdc), "only USDC !!");
         _updateInterest(msg.sender);
-        console.log("users[msg.sender].total_supply:", users[msg.sender].total_supply / 1 ether);
         return users[msg.sender].total_supply;
     }
 
