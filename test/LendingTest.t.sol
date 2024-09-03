@@ -5,7 +5,6 @@ import "forge-std/Test.sol";
 
 import {ERC20} from "../lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
 import "../src/DreamAcademyLending.sol";
-
 contract CUSDC is ERC20 {// USDC라는 스테이블 코인을 시뮬레이션하는 ERC20 토큰 컨트랙트
     constructor() ERC20("Circle Stable Coin", "USDC") {
         _mint(msg.sender, type(uint256).max);
@@ -314,7 +313,7 @@ contract Testx is Test {// 시뮬레이션 컨트랙트
             (success,) = address(lending).call(
                 abi.encodeWithSelector(DreamAcademyLending.borrow.selector, address(usdc), 999 ether)
             );
-            assertTrue(success);
+            assertTrue(success);// true라서 실패중임
         }
         vm.stopPrank();
     }
@@ -409,12 +408,12 @@ contract Testx is Test {// 시뮬레이션 컨트랙트
         supplySmallEtherDepositUser2();
 
         dreamOracle.setPrice(address(0x0), 4000 ether); // 4000 usdc
-
-        vm.startPrank(user2);
+        // 1 eth == 4000 won
+        vm.startPrank(user2);// user2가 
         {
             (bool success,) = address(lending).call(
                 abi.encodeWithSelector(DreamAcademyLending.borrow.selector, address(usdc), 1000 ether)
-            );
+            );// 1000 usdc
             assertTrue(success);
 
             (success,) = address(lending).call(
@@ -432,32 +431,33 @@ contract Testx is Test {// 시뮬레이션 컨트랙트
         vm.stopPrank();
     }
 
-    function testWithdrawLockedCollateralAfterInterestAccuredFails() external {
+    function testWithdrawLockedCollateralAfterInterestAccuredFails() external {///////////////minchae
         // 이자가 발생한 후 담보로 잠긴 자산을 인출하려 할 때 인출이 실패하는지 확인
         supplyUSDCDepositUser1();
         supplySmallEtherDepositUser2();
 
         dreamOracle.setPrice(address(0x0), 4000 ether); // 4000 usdc
+        ///// 1 eth = 4000 won
 
         vm.startPrank(user2);
         {
             (bool success,) = address(lending).call(
                 abi.encodeWithSelector(DreamAcademyLending.borrow.selector, address(usdc), 1000 ether)
-            );
-            assertTrue(success);
+            );// 1000 usdc 빌리면
+            assertTrue(success);// 성공해야됨
 
             (success,) = address(lending).call(
                 abi.encodeWithSelector(DreamAcademyLending.borrow.selector, address(usdc), 1000 ether)
-            );
-            assertTrue(success);
+            );// 1000 usdc 또 빌리면
+            assertTrue(success);// 성공해야됨
 
             // 2000 / (4000 - 1333) * 100 = 74.xxxx
             // LT = 75%
             vm.roll(block.number + 1000);
             (success,) = address(lending).call(
                 abi.encodeWithSelector(DreamAcademyLending.withdraw.selector, address(0x0), 1 ether * 1333 / 4000)
-            );
-            assertFalse(success);
+            );// 1333/4000 이더를 빌리면
+            assertFalse(success);// 실패해야함 (이게 안됨 지금)
         }
         vm.stopPrank();
     }
@@ -780,7 +780,7 @@ contract Testx is Test {// 시뮬레이션 컨트랙트
         vm.stopPrank();
     }
 
-    function testLiquidationAfterDebtPriceDropFails() external {
+    function testLiquidationAfterDebtPriceDropFails() external { ////////////////////////////minchae
         // 빚의 가격이 떨어진 후에도 청산이 실패하는지 확인
 
         // just imagine if USDC falls down
@@ -813,7 +813,7 @@ contract Testx is Test {// 시뮬레이션 컨트랙트
             (bool success,) = address(lending).call(
                 abi.encodeWithSelector(DreamAcademyLending.liquidate.selector, user2, address(usdc), 500 ether)
             );
-            assertFalse(success);
+            assertFalse(success);// 또 ...
         }
         vm.stopPrank();
     }
