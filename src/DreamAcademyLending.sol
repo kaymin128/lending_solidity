@@ -121,13 +121,7 @@ contract DreamAcademyLending {
         require(token == address(usdc), "Only USDC !!");
 
         _updateInterest(user); 
-        uint max_liquidation;
-        if (users[user].borrowed_usdc>=100 ether){
-            max_liquidation=users[user].borrowed_usdc/4;
-        }
-        else{
-            max_liquidation=users[user].borrowed_usdc;
-        }
+        uint max_liquidation=users[user].borrowed_usdc/4;
         require(amount<=max_liquidation, "borrowed amount is too small");
         uint256 ether_collateral_value = users[user].deposited_ether * oracle.getPrice(address(0x0));
         uint256 user_debt = users[user].borrowed_usdc*oracle.getPrice(token);
